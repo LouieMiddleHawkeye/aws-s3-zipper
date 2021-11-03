@@ -19,15 +19,31 @@ function S3Zipper(awsConfig) {
             undefined,
             "Requires S3 AWS Secret"
         );
+    } else {
+        assert.notEqual(
+            awsConfig.profileName,
+            undefined,
+            "Requires AWS credentials profile"
+        );
+        var credentials = new AWS.SharedInFileCredentials({
+            profile: profileName,
+        });
     }
     assert.notEqual(awsConfig.region, undefined, "Requires AWS S3 region.");
     assert.notEqual(awsConfig.bucket, undefined, "Requires AWS S3 bucket.");
 
-    AWS.config.update({
-        accessKeyId: awsConfig.accessKeyId,
-        secretAccessKey: awsConfig.secretAccessKey,
-        region: awsConfig.region,
-    });
+    if (credentials) {
+        AWS.config.credentials = credentials;
+        AWS.config.update({
+            region: awsConfig.region,
+        });
+    } else {
+        AWS.config.update({
+            accessKeyId: awsConfig.accessKeyId,
+            secretAccessKey: awsConfig.secretAccessKey,
+            region: awsConfig.region,
+        });
+    }
 
     self.init(awsConfig);
 }
