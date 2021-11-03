@@ -7,6 +7,7 @@ var s3 = require("@auth0/s3");
 
 function S3Zipper(awsConfig) {
     var self = this;
+    var credentials;
     assert.ok(awsConfig, "AWS S3 options must be defined.");
     if (!awsConfig.useCredentials) {
         assert.notEqual(
@@ -21,12 +22,12 @@ function S3Zipper(awsConfig) {
         );
     } else {
         assert.notEqual(
-            awsConfig.profileName,
+            awsConfig.profile,
             undefined,
             "Requires AWS credentials profile"
         );
-        var credentials = new AWS.SharedInFileCredentials({
-            profile: profileName,
+        credentials = new AWS.SharedIniFileCredentials({
+            profile: awsConfig.profile,
         });
     }
     assert.notEqual(awsConfig.region, undefined, "Requires AWS S3 region.");
