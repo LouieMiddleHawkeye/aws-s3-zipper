@@ -96,10 +96,8 @@ S3Zipper.prototype = {
         var files = {};
         files.Contents = [];
 
-        const { fromIni } = require("@aws-sdk/credential-provider-ini");
         var options = {
             s3Client: this.s3bucket,
-            credentials: fromIni({ profile: "okta" }),
             // more options available. See API docs below.
         };
         var client = s3.createClient(options);
