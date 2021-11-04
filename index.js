@@ -256,13 +256,18 @@ S3Zipper.prototype = {
         });
     },
 
-    uploadLocalFileToS3: function (localFileName, s3ZipFileName, callback) {
+    uploadLocalFileToS3: function (
+        localFileName,
+        s3ZipFileName,
+        callback,
+        bucket
+    ) {
         console.log("uploading ", s3ZipFileName, "...");
         var readStream = fs.createReadStream(localFileName); //tempFile
 
         this.s3bucket
             .upload({
-                Bucket: this.awsConfig.bucket,
+                Bucket: bucket,
                 Key: s3ZipFileName,
                 ContentType: "application/zip",
                 Body: readStream,
@@ -379,6 +384,8 @@ S3Zipper.prototype = {
             params.s3ZipFileName =
                 params.s3FolderName + "/" + params.s3ZipFileName;
 
+        params.bucket = params.bucket ? params.bucket : awsConfig.bucket;
+
         var finalResult;
 
         var count = 0;
@@ -413,7 +420,8 @@ S3Zipper.prototype = {
                     if (pendingUploads == 0 && finalResult) {
                         callback(null, finalResult);
                     }
-                }
+                },
+                params.bucket
             );
         }
     },
